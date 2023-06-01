@@ -1,0 +1,50 @@
+- name: Install and Configure Prometheus on Grafana VM
+  hosts: grafana
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required dependencies
+      apt:
+        name:
+          - curl
+          - gnupg2
+        state: present
+
+    - name: Add Prometheus GPG key
+      apt_key:
+        url: https://prometheus.io/keyring.gpg
+        state: present
+
+    - name: Add Prometheus APT repository
+      apt_repository:
+        repo: deb https://packagecloud.io/prometheus/apt/ubuntu focal main
+        state: present
+
+    - name: Install Prometheus
+      apt:
+        name: prometheus
+        state: present
+
+    - name: Configure Prometheus
+      template:
+        src: prometheus.yml.j2
+        dest: /etc/prometheus/prometheus.yml
+      notify:
+        - restart prometheus
+
+    - name: Ensure Prometheus service is running and enabled
+      systemd:
+        name: prometheus
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart prometheus
+      systemd:
+        name: prometheus
+        state: restarted
+

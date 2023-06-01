@@ -1,0 +1,33 @@
+- name: Uninstall Prometheus from Grafana VM
+  hosts: grafana
+  become: true
+
+  tasks:
+    - name: Stop and disable Prometheus service
+      systemd:
+        name: prometheus
+        state: stopped
+        enabled: no
+      ignore_errors: true
+
+    - name: Remove Prometheus package
+      apt:
+        name: prometheus
+        state: absent
+
+    - name: Remove Prometheus configuration file
+      file:
+        path: /etc/prometheus/prometheus.yml
+        state: absent
+
+    - name: Remove Prometheus repository
+      apt_repository:
+        repo: deb https://packagecloud.io/prometheus/apt/ubuntu focal main
+        state: absent
+
+  handlers:
+    - name: restart prometheus
+      systemd:
+        name: prometheus
+        state: restarted
+
