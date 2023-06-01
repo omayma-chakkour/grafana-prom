@@ -1,4 +1,3 @@
-
 - name: Install and Configure Node Exporter
   hosts: test
   become: true
@@ -8,7 +7,7 @@
   tasks:
     - name: Download Node Exporter archive
       get_url:
-        url : "https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz"
+        url: "https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz"
         dest: /tmp/node_exporter.tar.gz
         mode: 0644
 
